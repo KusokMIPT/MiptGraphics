@@ -54,10 +54,10 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Create and compile our GLSL program from the shaders
     GLuint leftProgramID = LoadShaders("../SimpleVertexShader.vertexshader", "../OuterFragmentShader.fragmentshader");
     GLuint rightProgramID = LoadShaders("../SimpleVertexShader.vertexshader", "../InnerFragmentShader.fragmentshader");
-//
+
+    // массив с координатами треугольников
     static const GLfloat g_vertex_buffer_data[] = {
             -0.8f, -0.8f, 0.0f,
             0.0f, 0.8f, 0.0f,
@@ -68,16 +68,17 @@ int main() {
             0.5f, 0.0f, 0.0f,
     };
 
+    // загрузка массива в OpenGL (закид в буффер)
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+    // цикл отрисовки
     do {
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT); //фон
 
-        // 1rst attribute buffer : vertices
+        // обращаение в буффер
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glVertexAttribPointer(
@@ -89,10 +90,8 @@ int main() {
         (void*) 0            // array buffer offset
         );
 
-        // Use our shader
+        // используем первый шейдор
         glUseProgram(leftProgramID);
-
-        // Draw the triangle !
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glUseProgram(rightProgramID);
@@ -115,8 +114,6 @@ int main() {
     glDeleteProgram(leftProgramID);
     glDeleteProgram(rightProgramID);
 
-    // Close OpenGL window and terminate GLFW
     glfwTerminate();
-
     return 0;
 }
