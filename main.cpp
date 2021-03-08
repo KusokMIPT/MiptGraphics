@@ -1,54 +1,122 @@
-#include <glm.hpp>
-#include <glfw3.h>
-#include <gtc/type_ptr.hpp>
-#include <gtx/transform.hpp>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <glew.h>
+#include <glfw3.h>
+#include <glm.hpp>
+
+#include "common/shader.hpp"
+
+using std::cout;
+using namespace glm;
+
+
+GLFWwindow* window;
 
 int main() {
-    if(!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
+
+    if (!glfwInit()) {
+        fprintf(stderr, "Failed to initialize GLFW\n");
+        getchar();
         return -1;
     }
 
-    glfwDefaultWindowHints();
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(300, 300, "Red Triangle",
-                                          nullptr, nullptr);
-    if(window == nullptr) {
-        std::cerr << "Failed to open GLFW window" << std::endl;
+
+    // Open a window and create its OpenGL context
+    window = glfwCreateWindow(1024, 768, "HW 1", NULL, NULL);
+    if (window == NULL) {
+        fprintf(stderr,
+                "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
+        getchar();
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+
+    // Initialize GLEW
+    if (glewInit() != GLEW_OK) {
+        fprintf(stderr, "Failed to initialize GLEW\n");
+        getchar();
         glfwTerminate();
         return -1;
     }
 
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-    glfwShowWindow(window);
+    // Ensure we can capture the escape key being pressed below
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-    // Важно! Не эквивалентно glEnable(GL_DEPTH_TEST | GL_DOUBLEBUFFER)
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_DOUBLEBUFFER);
-    glDepthFunc(GL_LESS);
+    glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-    glClearColor(0, 0, 0, 1);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glm::mat4 m = glm::perspective(45.0f, 4.0f / 3.0f, 1.0f, 100.0f);
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(m));
+    // Create and compile our GLSL program from the shaders
+    GLuint leftProgramID = LoadShaders("../SimpleVertexShader.vertexshader", "../OuterFragmentShader.fragmentshader");
+    GLuint rightProgramID = LoadShaders("../SimpleVertexShader.vertexshader", "../InnerFragmentShader.fragmentshader");
+//
+    static const GLfloat g_vertex_buffer_data[] = {
+            -0.8f, -0.8f, 0.0f,
+            0.0f, 0.8f, 0.0f,
+            0.8f, -0.8f, 0.0f,
 
-    while(glfwWindowShouldClose(window) == GL_FALSE) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor4f(1, 0, 0, 1);
-        glBegin(GL_TRIANGLES);
-        glVertex3f(   0,  0.5, -5);
-        glVertex3f( 0.5, -0.5, -5);
-        glVertex3f(-0.5, -0.5, -5);
-        glEnd();
+            -0.5f, 0.0f, 0.0f,
+            0.0f, -0.9f, 0.0f,
+            0.5f, 0.0f, 0.0f,
+    };
 
+    GLuint vertexbuffer;
+    glGenBuffers(1, &vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+    do {
+        // Clear the screen
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // 1rst attribute buffer : vertices
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glVertexAttribPointer(
+        0,
+        3,                  // size
+        GL_FLOAT,           // type
+        GL_FALSE,           // normalized?
+        0,                  // stride
+        (void*) 0            // array buffer offset
+        );
+
+        // Use our shader
+        glUseProgram(leftProgramID);
+
+        // Draw the triangle !
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glUseProgram(rightProgramID);
+        glDrawArrays(GL_TRIANGLES, 3, 6);
+
+        glDisableVertexAttribArray(0);
+        // glDisableVertexAttribArray(vertexPosition_modelspaceID);
+
+        // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
-    }
 
-    glfwDestroyWindow(window);
+    } // Check if the ESC key was pressed or the window was closed
+    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
+           glfwWindowShouldClose(window) == 0);
+
+
+    // Cleanup VBO
+    glDeleteBuffers(1, &vertexbuffer);
+    glDeleteProgram(leftProgramID);
+    glDeleteProgram(rightProgramID);
+
+    // Close OpenGL window and terminate GLFW
     glfwTerminate();
+
     return 0;
 }
