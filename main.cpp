@@ -76,12 +76,11 @@ int main() {
     GLuint leftMatrixID = glGetUniformLocation(leftProgramID, "MVP");
     GLuint rightMatrixID = glGetUniformLocation(rightProgramID, "MVP");
 
-    // Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+    // переспектива
     glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-    // Or, for an ortho camera :
-    //glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
-    // Model matrix : an identity matrix (model will be at the origin)
+
+    // Model matrix : переносит точку отсчета координат из фигуры во вне
     glm::mat4 Model = glm::mat4(1.0f);
 
     GLuint vertexbuffer;
@@ -109,20 +108,20 @@ int main() {
         );
 
         // CAMERA
-
         double x = cos(degree) * 3;
         double y = sin(degree) * 3;
 
-        // Camera matrix
+        // Camera matrix: оперирует позиции матрицы
         glm::mat4 View = glm::lookAt(
-                glm::vec3(x, 0, y), // Camera is at (4,3,3), in World Space
+                glm::vec3(x, 0, y),
                 glm::vec3(0, 0, 0), // and looks at the origin
                 glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
         );
 
         // Our ModelViewProjection : multiplication of our 3 matrices
-        glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
+        glm::mat4 MVP = Projection * View * Model; // композиция
 
+        // rкомплилим шрейдер делаем преобрзаование марицы
         glUseProgram(leftProgramID);
         glUniformMatrix4fv(leftMatrixID, 1, GL_FALSE, &MVP[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);

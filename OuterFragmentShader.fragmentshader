@@ -1,8 +1,4 @@
-#version 120
-
 void main()
 {
-
-	gl_FragColor = vec4(255.0 / 255,215.0 / 255,0.0 / 255,0.9);
-
+	gl_FragColor = vec4(1, 215.0 / 255, 0.0 / 255,0.9); // цвета
 }
