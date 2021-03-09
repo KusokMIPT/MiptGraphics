@@ -59,17 +59,27 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Create and compile our GLSL program from the shaders
-    GLuint leftProgramID = LoadShaders("../SimpleTransform.vertexshader", "../OuterFragmentShader.fragmentshader");
-    GLuint rightProgramID = LoadShaders("../SimpleTransform.vertexshader", "../InnerFragmentShader.fragmentshader");
+    GLuint leftProgramID = LoadShaders("../Transform.vertexshader", "../Backround.fragmentshader");
+    GLuint rightProgramID = LoadShaders("../Transform.vertexshader", "../Inner.fragmentshader");
 
     static const GLfloat g_vertex_buffer_data[] = {
-            -0.8f, -0.8f, 0.0f,
-            0.0f, 0.8f, 0.0f,
-            0.8f, -0.8f, 0.0f,
-
+            0.f, 1.f, 0.0f,
+            0.5f, 0.f, 0.0f,
             -0.5f, 0.0f, 0.0f,
-            0.0f, -0.9f, 0.0f,
-            0.5f, 0.0f, 0.0f,
+
+            0.5f, 0.5f, 0.0f,
+            -0.5f, 0.5f, 0.0f,
+            0.0f, 0.1f, 0.0f,
+    };
+
+    static const GLfloat g_color_buffer_data[] = {
+            0.0f, 0.f, 0.0f,        //1
+            0.0f, 1.0f, 0.f,
+            1.0f, 1.f, 0.0f,
+
+            1.0f, 0.54f, 0.0f,        //2
+            0.4f, 0.4f, 0.4f,
+            0.0f, 0.0f, 0.f,
     };
 
     // Get a handle for our "MVP" uniform
@@ -77,16 +87,22 @@ int main() {
     GLuint rightMatrixID = glGetUniformLocation(rightProgramID, "MVP");
 
     // переспектива
-    glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 Projection = glm::perspective(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
 
 
     // Model matrix : переносит точку отсчета координат из фигуры во вне
-    glm::mat4 Model = glm::mat4(1.0f);
+    glm::mat4 Model = glm::mat4(5.f);
 
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+
+    GLuint colorbuffer;
+    glGenBuffers(1, &colorbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
     double degree = 0;
 
@@ -108,20 +124,20 @@ int main() {
         );
 
         // CAMERA
-        double x = cos(degree) * 3;
-        double y = sin(degree) * 3;
+        double x = cos(degree) * 2;
+        double y = sin(degree) * 2;
 
         // Camera matrix: оперирует позиции матрицы
         glm::mat4 View = glm::lookAt(
                 glm::vec3(x, 0, y),
-                glm::vec3(0, 0, 0), // and looks at the origin
-                glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+                glm::vec3(0, 0, 0), //
+                glm::vec3(0, 1, 0)  // Head
         );
 
         // Our ModelViewProjection : multiplication of our 3 matrices
         glm::mat4 MVP = Projection * View * Model; // композиция
 
-        // rкомплилим шрейдер делаем преобрзаование марицы
+        // комплилим шрейдер делаем преобрзаование марицы
         glUseProgram(leftProgramID);
         glUniformMatrix4fv(leftMatrixID, 1, GL_FALSE, &MVP[0][0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -136,9 +152,9 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        degree += 0.02;
+        degree += 0.01;
 
-    } // Check if the ESC key was pressed or the window was closed
+    }
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0);
 
