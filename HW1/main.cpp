@@ -54,18 +54,18 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    GLuint leftProgramID = LoadShaders("../SimpleVertexShader.vertexshader", "../OuterFragmentShader.fragmentshader");
-    GLuint rightProgramID = LoadShaders("../SimpleVertexShader.vertexshader", "../InnerFragmentShader.fragmentshader");
+    GLuint leftProgramID = LoadShaders("../VertexShader.vertexshader", "../Background.fragmentshader");
+    GLuint rightProgramID = LoadShaders("../VertexShader.vertexshader", "../Inner.fragmentshader");
 
     // массив с координатами треугольников
     static const GLfloat g_vertex_buffer_data[] = {
-            -0.8f, -0.8f, 0.0f,
-            0.0f, 0.8f, 0.0f,
-            0.8f, -0.8f, 0.0f,
-
+            0.f, 1.f, 0.0f,
+            0.5f, 0.f, 0.0f,
             -0.5f, 0.0f, 0.0f,
-            0.0f, -0.9f, 0.0f,
-            0.5f, 0.0f, 0.0f,
+
+            0.5f, 0.5f, 0.0f,
+            -0.5f, 0.5f, 0.0f,
+            0.0f, 0.1f, 0.0f,
     };
 
     // загрузка массива в OpenGL (закид в буффер)
@@ -98,7 +98,6 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 3, 6);
 
         glDisableVertexAttribArray(0);
-        // glDisableVertexAttribArray(vertexPosition_modelspaceID);
 
         // Swap buffers
         glfwSwapBuffers(window);
