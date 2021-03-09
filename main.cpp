@@ -67,18 +67,19 @@ int main() {
     glBindVertexArray(VertexArrayID);
 
     // create program from shader
-    GLuint programID = LoadShaders("../vertex.vertexshader", "../triang.fragmentshader");
+    GLuint programID = LoadShaders("../Vertex.vertexshader", "../Triangle.fragmentshader");
 
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+    GLuint MatrixID = glGetUniformLocation(programID, "MVP"); // M V P - композиция
 
     // Projection matrix
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f*2.f), 4.0f *2.f / 3.0f, 0.1f, 100.0f);
 
     // Model matrix : an identity matrix
     glm::mat4 Model = glm::mat4(1.0f);
 
-    vec3 cameraPos = glm::vec3(3, 2, 0);
+    // аргументы для камера
+    vec3 cameraPos = glm::vec3(4, 3, 0);
     vec3 originPos = glm::vec3(0, 0, 0);
     vec3 headPos = glm::vec3(0, 1, 0);
 
@@ -89,168 +90,74 @@ int main() {
 
     // a regular icosahedron consists of 20 triangles, so there will be 3*20=60 vertices
     static const GLfloat g_vertex_buffer_data[] = {
-            0.809f, 0.5f, 0.588f, //1st triange (1-2-3)
-            0.309f, -0.5f, 0.951f,
-            -0.309f, 0.5f, 0.951f,
+            2.f, 0.f, 0.f, // c b e
+            0.f, 2.f, 0.f,
+            0.f, 0.0f, 2.f,
 
-            0.809f, 0.5f, 0.588f, //2nd triange (1-10-2)
-            1.0f, -0.5f, 0.0f,
-            0.309f, -0.5f, 0.951f,
+            2.f, 0.f, 0.f, // b e d
+            0.f, -2.f, 0.f,
+            0.f, 0.0f, 2.f,
 
-            0.809f, 0.5f, 0.588f, //3rd triange (1-9-10)
-            0.809f, 0.5f, -0.588f,
-            1.0f, -0.5f, 0.0f,
+            -2.f, 0.f, 0.f, // a b d
+            0.f, -2.f, 0.f,
+            0.f, 0.0f, 2.f,
 
-            0.809f, 0.5f, -0.588f, //4th triange (9-8-10)
-            0.309f, -0.5f, -0.951f,
-            1.0f, -0.5f, 0.0f,
+            -2.f, 0.f, 0.f, // a b c
+            0.f, 2.f, 0.f,
+            0.f, 0.0f, 2.f,
 
-            0.809f, 0.5f, -0.588f, //5th triange (9-7-8)
-            -0.309f, 0.5f, -0.951f,
-            0.309f, -0.5f, -0.951f,
+            0.f, 0.f, 0.f, //
+            -2.f, 0.f, 0.f,
+            0.f, 2.f, 0.f,
 
-            -0.309f, 0.5f, -0.951f, //6th triange (7-6-8)
-            -0.809f, -0.5f, -0.588f,
-            0.309f, -0.5f, -0.951f,
+            0.f, 0.f, 0.f, //
+            2.f, 0.f, 0.f,
+            0.f, 2.f, 0.f,
 
-            -0.309f, 0.5f, -0.951f, //7th triange (7-5-6)
-            -1.0f, 0.5f, 0.0f,
-            -0.809f, -0.5f, -0.588f,
+            0.f, 0.f, 0.f, //
+            2.f, 0.f, 0.f,
+            0.f, -2.f, 0.f,
 
-            -1.0f, 0.5f, 0.0f, //8th triange (5-4-6)
-            -0.809f, -0.5f, 0.588f,
-            -0.809f, -0.5f, -0.588f,
+            0.f, 0.f, 0.f, //
+            -2.f, 0.f, 0.f,
+            0.f, -2.f, 0.f,
 
-            -1.0f, 0.5f, 0.0f, //9th triange (5-3-4)
-            -0.309f, 0.5f, 0.951f,
-            -0.809f, -0.5f, 0.588f,
-
-            -0.309f, 0.5f, 0.951f,  //10th triange (3-2-4)
-            0.309f, -0.5f, 0.951f,
-            -0.809f, -0.5f, 0.588f,
-
-            0.0f, 1.118f, 0.0f,  //11th triange (11-3-1)
-            -0.309f, 0.5f, 0.951f,
-            0.809f, 0.5f, 0.588f,
-
-            0.0f, 1.118f, 0.0f,  //12th triange (11-1-9)
-            0.809f, 0.5f, 0.588f,
-            0.809f, 0.5f, -0.588f,
-
-            0.0f, 1.118f, 0.0f,  //13th triange (11-9-7)
-            0.809f, 0.5f, -0.588f,
-            -0.309f, 0.5f, -0.951f,
-
-            0.0f, 1.118f, 0.0f,  //14th triange (11-7-5)
-            -0.309f, 0.5f, -0.951f,
-            -1.0f, 0.5f, 0.0f,
-
-            0.0f, 1.118f, 0.0f,  //15th triange (11-5-3)
-            -1.0f, 0.5f, 0.0f,
-            -0.309f, 0.5f, 0.951f,
-
-            0.0f, -1.118f, 0.0f,  //16th triange (12-2-10)
-            0.309f, -0.5f, 0.951f,
-            1.0f, -0.5f, 0.0f,
-
-            0.0f, -1.118f, 0.0f,  //17th triange (12-10-8)
-            1.0f, -0.5f, 0.0f,
-            0.309f, -0.5f, -0.951f,
-
-            0.0f, -1.118f, 0.0f,  //18th triange (12-8-6)
-            0.309f, -0.5f, -0.951f,
-            -0.809f, -0.5f, -0.588f,
-
-            0.0f, -1.118f, 0.0f,  //19th triange (12-6-4)
-            -0.809f, -0.5f, -0.588f,
-            -0.809f, -0.5f, 0.588f,
-
-            0.0f, -1.118f, 0.0f,  //20th triange (12-4-2)
-            -0.809f, -0.5f, 0.588f,
-            0.309f, -0.5f, 0.951f
     };
 
     // One color for each vertex.
     static const GLfloat g_color_buffer_data[] = {
-            1.0f, 0.97f, 0.0f,		//1
-            0.0f, 1.0f, 0.267f,
-            1.0f, 0.97f, 0.0f,
+            0.0f, 0.f, 0.0f,		//1
+            0.0f, 1.0f, 0.f,
+            1.0f, 1.f, 0.0f,
 
             1.0f, 0.54f, 0.0f,	    //2
-            1.0f, 0.54f, 0.0f,
-            0.0f, 1.0f, 0.737f,
+            0.4f, 0.4f, 0.4f,
+            0.0f, 0.0f, 0.f,
 
-            1.0f, 0.97f, 0.0f,
+            0.4f, 0.4f, 0.4f,
             0.0f, 1.0f, 0.267f,
-            1.0f, 0.97f, 0.0f,
+            0.0f, 0.f, 0.0f,
 
-            0.0f, 1.0f, 0.737f,
-            0.0f, 1.0f, 0.737f,
-            1.0f, 0.54f, 0.0f,
-
-            0.0f, 1.0f, 0.267f,
-            1.0f, 0.97f, 0.0f,
-            0.0f, 1.0f, 0.267f,
-
-            1.0f, 0.54f, 0.0f,		//6
-            1.0f, 0.54f, 0.0f,
-            0.0f, 1.0f, 0.737f,
-
-            1.0f, 0.97f, 0.0f,
-            0.0f, 1.0f, 0.267f,
-            1.0f, 0.97f, 0.0f,
-
-            0.0f, 1.0f, 0.737f,
-            0.0f, 1.0f, 0.737f,
-            1.0f, 0.54f, 0.0f,
-
-            1.0f, 0.97f, 0.0f,
-            1.0f, 0.97f, 0.0f,
-            0.0f, 1.0f, 0.267f,
-
-            1.0f, 0.54f, 0.0f,
-            1.0f, 0.54f, 0.0f,
-            0.0f, 1.0f, 0.737f,
-
-            1.0f, 0.0f, 0.078f,		//11
-            1.0f, 0.592f, 0.51f,
-            1.0f, 0.592f, 0.51f,
-
-            1.0f, 0.0f, 0.078f,
-            1.0f, 0.56f, 0.686f,
-            1.0f, 0.56f, 0.686f,
-
-            1.0f, 0.0f, 0.078f,
-            1.0f, 0.4f, 1.0f,
-            1.0f, 0.4f, 1.0f,
-
-            1.0f, 0.0f, 0.078f,
-            0.784f, 0.0f, 1.0f,
-            0.784f, 0.0f, 1.0f,
+            0.4f, 0.4f, 0.4f,
+            0.0f, 0.0f, 0.0f,
+            1.0f, 1.f, 0.0f,
 
             1.0f, 0.0f, 0.078f,
             0.467f, 0.02f, 1.0f,
             0.467f, 0.02f, 1.0f,
 
-            1.0f, 0.0f, 0.078f,		//16
-            1.0f, 0.592f, 0.51f,
-            1.0f, 0.592f, 0.51f,
-
             1.0f, 0.0f, 0.078f,
-            1.0f, 0.56f, 0.686f,
-            1.0f, 0.56f, 0.686f,
-
-            1.0f, 0.0f, 0.078f,
-            1.0f, 0.4f, 1.0f,
-            1.0f, 0.4f, 1.0f,
-
-            1.0f, 0.0f, 0.078f,
-            0.784f, 0.0f, 1.0f,
-            0.784f, 0.0f, 1.0f,
+            0.467f, 0.02f, 1.0f,
+            0.467f, 0.02f, 1.0f,
 
             1.0f, 0.0f, 0.078f,
             0.467f, 0.02f, 1.0f,
-            0.467f, 0.02f, 1.0f
+            0.467f, 0.02f, 1.0f,
+
+            1.0f, 0.0f, 0.078f,
+            0.467f, 0.02f, 1.0f,
+            0.467f, 0.02f, 1.0f,
+
     };
 
     GLuint vertexbuffer;
@@ -263,10 +170,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
-    // the camera will move on the circle
+    // пермер для вращения
     double pos = 0.0;
-    double pos2 = 0.0;  // to move along the 2nd axis
-    double pi = 3.1415;
 
     do {
         // clear the screen
@@ -280,10 +185,9 @@ int main() {
         // ModelViewProjection : multiplication of our 3 matrices
         glm::mat4 MVP = Projection * View * Model;
 
-        pos += pi / 360 / 12; // to move rather slow
-        pos2 += pi / 360 / 20; // to move even slower
+        pos += M_PI / 180 ; // угл для вращения камены
 
-        cameraPos = glm::vec3(3 * cos(pos), 2 * cos(pos2), 3 * sin(pos));
+        cameraPos = glm::vec3(cos(pos), 2 * cos(pos), 3 * sin(pos));
 
         // Send our transformation to the currently bound shader, in the "MVP" uniform
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -300,8 +204,8 @@ int main() {
         glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-        // draw the triangles
-        glDrawArrays(GL_TRIANGLES, 0, 3 * 20);   // start from 0 vertex, use 3 * 20 of them
+        // отрисовываем треугольники
+        glDrawArrays(GL_TRIANGLES, 0, 3 * 8);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
