@@ -1,0 +1,11 @@
+#version 330
+
+in vec3 fragmentColor; // Interpolated values from the vertex shaders
+
+out vec3 color; // Ouput data
+
+void main(){
+	// Output color = color specified in the vertex shader,
+	// interpolated between all 3 surrounding vertices
+	color = fragmentColor;
+}
