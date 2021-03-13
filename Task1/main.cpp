@@ -90,7 +90,7 @@ int main() {
         (void*) 0            // array buffer offset
         );
 
-        // используем первый шейдор
+        // используем первый шейдер
         glUseProgram(leftProgramID);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
