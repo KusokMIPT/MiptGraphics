@@ -54,8 +54,8 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    GLuint leftProgramID = LoadShaders("../VertexShader.vertexshader", "../Background.fragmentshader");
-    GLuint rightProgramID = LoadShaders("../VertexShader.vertexshader", "../Inner.fragmentshader");
+    GLuint leftProgramID = LoadShaders("../VertexShader.vertexshader", "../Fragment1.fragmentshader");
+    GLuint rightProgramID = LoadShaders("../VertexShader.vertexshader", "../Fragment2.fragmentshader");
 
     // массив с координатами треугольников
     static const GLfloat g_vertex_buffer_data[] = {
@@ -76,25 +76,31 @@ int main() {
 
     // цикл отрисовки
     do {
-        glClear(GL_COLOR_BUFFER_BIT); //фон
+        glClear(GL_COLOR_BUFFER_BIT); //заполняем цвета фон
 
         // обращаение в буффер
+        // Указываем, что первым буфером атрибутов будут вершины
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glVertexAttribPointer(
-        0,
-        3,                  // size
-        GL_FLOAT,           // type
-        GL_FALSE,           // normalized?
-        0,                  // stride
-        (void*) 0            // array buffer offset
+                0,                  // Атрибут 0. Подробнее об этом будет рассказано в части, посвященной шейдерам.
+                3,                  // Размер
+                GL_FLOAT,           // Тип
+                GL_FALSE,           // Указывает, что значения не нормализованы
+                0,                  // Шаг
+                (void*)0            // Смещение массива в буфере
         );
 
-        // используем первый шейдер
+
+        // используем первый шейдерю
         glUseProgram(leftProgramID);
+
+        // Начиная с вершины 0, всего 3 вершины -> один треугольник
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glUseProgram(rightProgramID);
+
+        // Начиная с вершины 3, всего 3 вершины -> второй треугольник
         glDrawArrays(GL_TRIANGLES, 3, 6);
 
         glDisableVertexAttribArray(0);

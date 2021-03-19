@@ -1,7 +1,7 @@
-attribute vec3 vertexPosition_modelspace;
+attribute vec3 vertexPosition_modelspace; //объявление входных данных
 
 void main(){
-
-	gl_Position = vec4(vertexPosition_modelspace, 1.0);
+    // Присваиваем переменную отвечающей за отображение интпут полученный из буфера вида (позиция, прозрачность)
+	gl_Position = vec4(vertexPosition_modelspace, 1.0); //RGB
 
 }

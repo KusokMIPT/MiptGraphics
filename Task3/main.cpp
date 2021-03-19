@@ -73,7 +73,7 @@ int main() {
     GLuint MatrixID = glGetUniformLocation(programID, "MVP"); // M V P - композиция
 
     // Projection matrix
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f*2.f), 4.0f *2.f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f * 2.f), 4.0f * 2.f / 3.0f, 0.1f, 100.0f);
 
     // Model matrix : an identity matrix
     glm::mat4 Model = glm::mat4(1.0f);

@@ -59,8 +59,8 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Create and compile our GLSL program from the shaders
-    GLuint leftProgramID = LoadShaders("../Transform.vertexshader", "../Backround.fragmentshader");
-    GLuint rightProgramID = LoadShaders("../Transform.vertexshader", "../Inner.fragmentshader");
+    GLuint leftProgramID = LoadShaders("../Transform.vertexshader", "../Fragment1f.fragmentshader");
+    GLuint rightProgramID = LoadShaders("../Transform.vertexshader", "../Fragment2.fragmentshader");
 
     static const GLfloat g_vertex_buffer_data[] = {
             0.f, 1.f, 0.0f,
@@ -134,7 +134,7 @@ int main() {
                 glm::vec3(0, 1, 0)  // Head
         );
 
-        // Our ModelViewProjection : multiplication of our 3 matrices
+        // Our ModelViewProjection : создаём нашу MVP матрицу
         glm::mat4 MVP = Projection * View * Model; // композиция
 
         // комплилим шрейдер делаем преобрзаование марицы
