@@ -59,7 +59,7 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Create and compile our GLSL program from the shaders
-    GLuint leftProgramID = LoadShaders("../Transform.vertexshader", "../Fragment1f.fragmentshader");
+    GLuint leftProgramID = LoadShaders("../Transform.vertexshader", "../Fragment1.fragmentshader");
     GLuint rightProgramID = LoadShaders("../Transform.vertexshader", "../Fragment2.fragmentshader");
 
     static const GLfloat g_vertex_buffer_data[] = {
